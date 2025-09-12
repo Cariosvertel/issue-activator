@@ -22,6 +22,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data
+            android:name="THING_SMART_APPKEY"
+            android:value="fr8rnmkpemmcxytfymv7" />
+        <meta-data
+            android:name="THING_SMART_SECRET"
+            android:value="45rv49dgqwxrcsdkcjsp8j79mdn5jcc7" />
     </application>
 
 </manifest>

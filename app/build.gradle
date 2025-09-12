@@ -1,3 +1,10 @@
+buildscript {
+    ext {
+        sdk_version = '5.9.1-cube'
+        biz_bom_version = '5.9.0-cube300.15'
+    }
+
+}
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -35,6 +42,9 @@ android {
         compose true
     }
 }
+configurations.all {
+    exclude group: "com.thingclips.smart" ,module: 'thingsmart-modularCampAnno'
+}
 
 dependencies {
 
@@ -53,4 +63,12 @@ dependencies {
     androidTestImplementation libs.androidx.ui.test.junit4
     debugImplementation libs.androidx.ui.tooling
     debugImplementation libs.androidx.ui.test.manifest
+
+    // Tuya transitive helpers you pinned in the app
+    implementation("com.alibaba:fastjson:1.1.67.android")
+    implementation("com.squareup.okhttp3:okhttp-urlconnection:3.14.9")
+    implementation 'com.facebook.soloader:soloader:0.10.4+'
+    api "com.thingclips.smart:thingsmart:${sdk_version}"
+    api enforcedPlatform("com.thingclips.smart:thingsmart-BizBundlesBom:${biz_bom_version}")
+    api "com.thingclips.smart:thingsmart-bizbundle-device_activator"
 }
