@@ -2,7 +2,7 @@
   "searchTypeZigbee": false,
   "searchTypeEZ": true,
   "searchTypePegasus": false,
-  "searchTypeBle": false,
+  "searchTypeBle": true,
   "searchTypeWired": false,
   "searchTypeMatter": false
 }
