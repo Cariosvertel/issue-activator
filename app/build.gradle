@@ -86,4 +86,6 @@ dependencies {
     api "com.thingclips.smart:thingsmart:${sdk_version}"
     api enforcedPlatform("com.thingclips.smart:thingsmart-BizBundlesBom:${biz_bom_version}")
     api "com.thingclips.smart:thingsmart-bizbundle-device_activator"
+    api "com.thingclips.smart:thingsmart-bizbundle-family"
+    api "com.thingclips.smart:thingsmart-bizbundle-scene"
 }

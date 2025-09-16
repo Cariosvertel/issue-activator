@@ -21,11 +21,13 @@ import com.thingclips.smart.activator.plug.mesosphere.ThingDeviceActivatorManage
 import com.thingclips.smart.activator.plug.mesosphere.api.IThingDeviceActiveListener
 import com.thingclips.smart.android.user.api.IUidLoginCallback
 import com.thingclips.smart.android.user.bean.User
+import com.thingclips.smart.api.MicroContext
 import com.thingclips.smart.api.service.MicroServiceManager
 import com.thingclips.smart.commonbiz.bizbundle.family.api.AbsBizBundleFamilyService
 import com.thingclips.smart.home.sdk.ThingHomeSdk
 import com.thingclips.smart.home.sdk.bean.HomeBean
 import com.thingclips.smart.home.sdk.callback.IThingGetHomeListCallback
+import com.thingclips.smart.scene.business.api.IThingSceneBusinessService
 
 
 class MainActivity : ComponentActivity() {
@@ -112,6 +114,59 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             })
         }) {
             Text("Open Activator")
+        }
+        Button(onClick = {
+            try {
+                Log.d("BizBundleChannelHandler", "Starting scene manager")
+
+                // Validate family service
+                val familyService = MicroServiceManager.getInstance().findServiceByInterface(AbsBizBundleFamilyService::class.java.name) as? AbsBizBundleFamilyService
+
+                if (familyService == null) {
+                    Log.e("BizBundleChannelHandler", "openSceneManager: BizBundleFamilyService not found")
+                    return@Button
+                }
+
+                val currentHomeId = familyService?.getCurrentHomeId()
+                Log.d("BizBundleChannelHandler", "openSceneManager: Current home ID: $currentHomeId")
+
+
+                // Get scene business service
+                val sceneService = MicroContext.findServiceByInterface(IThingSceneBusinessService::class.java.name) as? IThingSceneBusinessService
+                if (sceneService == null) {
+                    Log.e("BizBundleChannelHandler", "openSceneManager: IThingSceneBusinessService not found")
+                    return@Button
+                }
+
+
+                try {
+                    // Always create new scene (as per testing requirement)
+
+
+                    // Request code for activity result handling
+                    val ADD_SCENE_REQUEST_CODE = 1001
+                    val familyService = MicroServiceManager.getInstance().findServiceByInterface(
+                        AbsBizBundleFamilyService::class.java.name) as? AbsBizBundleFamilyService
+
+                    if (familyService == null) {
+                        Log.e("HomeChannelHandler", "setFirstHomeAsDefaultIfNeeded: BizBundleFamilyService not found")
+                        return@Button
+                    }
+                    // Check if default home is already set (getCurrentHomeId > 0)
+                    val currentHomeId = familyService.getCurrentHomeId()
+
+                    sceneService.addSceneBean(context as? ComponentActivity, currentHomeId, ADD_SCENE_REQUEST_CODE)
+                    Log.d("BizBundleChannelHandler", "Scene manager opened successfully")
+                } catch (e: Exception) {
+                    Log.e("BizBundleChannelHandler", "Error opening scene manager on main thread", e)
+                }
+
+
+            } catch (e: Exception) {
+                Log.e("BizBundleChannelHandler", "Error opening scene manager", e)
+            }
+        }) {
+            Text("Open Scenes Manager")
         }
     }
 }
