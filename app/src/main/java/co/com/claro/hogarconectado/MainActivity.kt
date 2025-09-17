@@ -27,6 +27,8 @@ import com.thingclips.smart.commonbiz.bizbundle.family.api.AbsBizBundleFamilySer
 import com.thingclips.smart.home.sdk.ThingHomeSdk
 import com.thingclips.smart.home.sdk.bean.HomeBean
 import com.thingclips.smart.home.sdk.callback.IThingGetHomeListCallback
+import com.thingclips.smart.home.sdk.callback.IThingHomeResultCallback
+import com.thingclips.smart.panelcaller.api.AbsPanelCallerService
 import com.thingclips.smart.scene.business.api.IThingSceneBusinessService
 
 
@@ -167,6 +169,69 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
             }
         }) {
             Text("Open Scenes Manager")
+        }
+        Button(onClick = {
+            try {
+
+                Log.d("BizBundleChannelHandler", "Starting camera panel")
+
+                // Validate family service
+                val familyService = MicroServiceManager.getInstance().findServiceByInterface(AbsBizBundleFamilyService::class.java.name) as? AbsBizBundleFamilyService
+                if (familyService == null) {
+                    Log.e("BizBundleChannelHandler", "openCameraPanel: BizBundleFamilyService not found")
+                    return@Button
+                }
+
+                val currentHomeId = familyService.getCurrentHomeId()
+                Log.d("BizBundleChannelHandler", "openCameraPanel: Current home ID: $currentHomeId")
+                try {
+                    // Get panel caller service first
+                    val panelCallerService = MicroContext.getServiceManager().findServiceByInterface(
+                        AbsPanelCallerService::class.java.name) as? AbsPanelCallerService
+                    if (panelCallerService == null) {
+                        Log.e("BizBundleChannelHandler", "openCameraPanel: AbsPanelCallerService not found")
+
+                        return@Button
+                    }
+
+                    // Get home details to access device list
+                    val homeInstance = ThingHomeSdk.newHomeInstance(currentHomeId)
+                    homeInstance.getHomeDetail(object : IThingHomeResultCallback {
+                        override fun onSuccess(homeBean: HomeBean?) {
+                            try {
+                                if (homeBean == null) {
+                                    Log.e("BizBundleChannelHandler", "openCameraPanel: HomeBean is null")
+                                    return
+                                }
+                                // Find the device in the home's device list
+                                val deviceBean = homeBean.deviceList?.firstOrNull()
+                                if (deviceBean == null) {
+                                    Log.e("BizBundleChannelHandler", "openCameraPanel: HomeBean is null")
+                                    return
+                                }
+                                Log.d("BizBundleChannelHandler", "openCameraPanel: Device category: ${deviceBean.category}")
+                                // Open panel for individual device (DeviceBean represents individual devices, not groups)
+
+                                panelCallerService.goPanelWithCheckAndTip(context as ComponentActivity, deviceBean.devId)
+
+                                Log.d("BizBundleChannelHandler", "Camera panel opened successfully")
+                            } catch (e: Exception) {
+                                Log.e("BizBundleChannelHandler", "Error processing home details", e)
+                            }
+                        }
+
+                        override fun onError(errorCode: String?, errorMsg: String?) {
+                            Log.e("BizBundleChannelHandler", "openCameraPanel: Failed to get home details: $errorCode - $errorMsg")
+                        }
+                    })
+                } catch (e: Exception) {
+                    Log.e("BizBundleChannelHandler", "Error opening camera panel on main thread", e)
+                }
+            } catch (e: Exception) {
+                Log.e("BizBundleChannelHandler", "Error opening camera panel", e)
+            }
+        }) {
+            Text("Open Default Camera")
         }
     }
 }
