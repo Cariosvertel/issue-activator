@@ -14,8 +14,9 @@ import com.thingclips.smart.home.sdk.ThingHomeSdk
 import com.thingclips.smart.optimus.sdk.ThingOptimusSdk
 import com.thingclips.smart.theme.ThingThemeInitializer.init
 import com.thingclips.smart.wrapper.api.ThingWrapper
+import dagger.hilt.android.HiltAndroidApp
 
-
+@HiltAndroidApp
 class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()

@@ -2,6 +2,7 @@ buildscript {
     ext {
         sdk_version = '5.9.1-cube'
         biz_bom_version = '5.9.0-cube300.15'
+        hilt_version = '2.50'
     }
 
 }
@@ -9,6 +10,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt)
+    id 'kotlin-kapt'
 }
 
 android {
@@ -88,4 +91,9 @@ dependencies {
     api "com.thingclips.smart:thingsmart-bizbundle-device_activator"
     api "com.thingclips.smart:thingsmart-bizbundle-family"
     api "com.thingclips.smart:thingsmart-bizbundle-scene"
+    api "com.thingclips.smart:thingsmart-bizbundle-qrcode_mlkit"
+    api "com.thingclips.smart:thingsmart-bizbundle-map_google"
+    api "com.thingclips.smart:thingsmart-bizbundle-location_google"
+    kapt "com.google.dagger:hilt-compiler:${hilt_version}"
+    implementation "com.google.dagger:hilt-android:${hilt_version}"
 }
